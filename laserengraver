@@ -22,6 +22,7 @@ from numpy import pi, sin, cos, sqrt, arccos, arcsin
 import argparse
 from subprocess import Popen
 import subprocess
+import smtplib
 
 ################################################################################################
 ################################################################################################
@@ -269,3 +270,31 @@ cmd = 'MP4Box -add /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264 /mnt
 pid = subprocess.call(cmd, shell=True)
 pid = subprocess.call('rm /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264', shell=True)
 pid = subprocess.call('raspistill -vf -hf -t 5 -o /mnt/media/Pictures/Raspi/'  + args.title + '/final.jpg', shell=True)
+
+## Send completed email.
+SMTP_SERVER = 'smtp.gmail.com'
+SMTP_PORT = 587
+sender = ''
+password = ''
+recipient = ''
+subject = 'Engraving Finished'
+body = 'The engraving has finished.  Please make safe the laser and view your work.  A video and picture of the engraving is located in /mnt/media/Pictures/Raspi/' + args.title + '. '
+
+body = "" + body + ""
+ 
+headers = ["From: " + sender,
+           "Subject: " + subject,
+           "To: " + recipient,
+           "MIME-Version: 1.0",
+           "Content-Type: text/html"]
+headers = "\r\n".join(headers)
+
+session = smtplib.SMTP(server, port)
+ 
+session.ehlo()
+session.starttls()
+session.ehlo
+session.login(sender, password)
+ 
+session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
+session.quit()
