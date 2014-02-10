@@ -20,6 +20,8 @@ from Bipolar_Stepper_Motor_Class import Bipolar_Stepper_Motor
 import time
 from numpy import pi, sin, cos, sqrt, arccos, arcsin
 import argparse
+from subprocess import Popen
+import subprocess
 
 ################################################################################################
 ################################################################################################
@@ -34,6 +36,8 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("-f", "--filepath", help="Path to GCode file")
 group.add_argument("-m", "--manual", action="store_true", help="Manually control printer")
 parser.add_argument("-s", "--speed", type=float, help="Engraving speed (mm/sec)")
+group.add_argument("-t", "--title", help="Title of Engraving")
+
 args = parser.parse_args()
 
 GPIO.setmode(GPIO.BOARD)
@@ -139,6 +143,10 @@ def laseron(): #When laser is turned on for the first time, pause a bit
 ###########################################################################################
 ###########################################################################################
 
+pid = subprocess.call("mkdir /mnt/media/Pictures/Raspi/" + args.title, shell=True)
+cmd = ['raspivid', '-vf', '-hf', '-o', '/mnt/media/Pictures/Raspi/' + args.title + '/video.h264', '-t', '999999', '-fps', '10']
+popen = Popen(cmd)
+
 try:#read and execute G code
     if (args.manual == False):
         filename=args.filepath; #file name of the G code commands
@@ -242,6 +250,8 @@ try:#read and execute G code
             else:
                 MY.move(-1,abs(ysteps),0.01)
 except KeyboardInterrupt:
+    popen.kill()
+    pid = subprocess.call('pkill raspivid', shell=True)
     pass
 
 GPIO.output(Laser_switch,False);   # turn off laser
@@ -251,3 +261,11 @@ MX.unhold();
 MY.unhold();
 
 GPIO.cleanup();
+
+popen.kill()
+pid = subprocess.call('pkill raspivid', shell=True)
+
+cmd = 'MP4Box -add /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264 /mnt/media/Pictures/Raspi/'  + args.title + '/video.mp4'
+pid = subprocess.call(cmd, shell=True)
+pid = subprocess.call('rm /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264', shell=True)
+pid = subprocess.call('raspistill -vf -hf -t 5 -o /mnt/media/Pictures/Raspi/'  + args.title + '/final.jpg', shell=True)
