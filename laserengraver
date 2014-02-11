@@ -37,7 +37,7 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument("-f", "--filepath", help="Path to GCode file")
 group.add_argument("-m", "--manual", action="store_true", help="Manually control printer")
 parser.add_argument("-s", "--speed", type=float, help="Engraving speed (mm/sec)")
-group.add_argument("-t", "--title", help="Title of Engraving")
+parser.add_argument("-t", "--title", help="Title of Engraving")
 
 args = parser.parse_args()
 
@@ -269,6 +269,8 @@ pid = subprocess.call('pkill raspivid', shell=True)
 cmd = 'MP4Box -add /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264 /mnt/media/Pictures/Raspi/'  + args.title + '/video.mp4'
 pid = subprocess.call(cmd, shell=True)
 pid = subprocess.call('rm /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264', shell=True)
+
+time.sleep(5)
 pid = subprocess.call('raspistill -vf -hf -t 5 -o /mnt/media/Pictures/Raspi/'  + args.title + '/final.jpg', shell=True)
 
 ## Send completed email.
@@ -289,7 +291,7 @@ headers = ["From: " + sender,
            "Content-Type: text/html"]
 headers = "\r\n".join(headers)
 
-session = smtplib.SMTP(server, port)
+session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
  
 session.ehlo()
 session.starttls()

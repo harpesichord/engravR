@@ -3,9 +3,8 @@
 
 function engrave($file, $title, $speed)
 {
-	$command = escapeshellcmd('sudo -i nohup /usr/custom/engravR/laserengraver -f ' . $file . ' -s ' . $speed . ' -t "' . $title . '" > /dev/null &');
+	$command = 'sudo -u root /usr/bin/python2.7 /usr/custom/engravR/laserengraver.py -f ' . $file . ' -s ' . $speed . ' -t "' . $title . '" > /dev/null &';
 	$output = shell_exec($command);
-	
 }
 
 function validate()
