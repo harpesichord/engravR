@@ -18,7 +18,9 @@ function validate()
 	if ($_POST['title'] == "")
 		return "Title must not be empty.";
 	if (!is_numeric($_POST["speed"]))
-		return "Speed must be a number";
+		return "Speed must be a number.";
+	if (file_exists("/mnt/media/Pictures/Raspi/" . $title . "/video.h264"))
+		return "This title already exists.";
 }
 
 

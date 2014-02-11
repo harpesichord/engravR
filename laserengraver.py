@@ -263,15 +263,21 @@ MY.unhold();
 
 GPIO.cleanup();
 
+popen.terminate()
 popen.kill()
 pid = subprocess.call('pkill raspivid', shell=True)
+popen.wait()
 
-cmd = 'MP4Box -add /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264 /mnt/media/Pictures/Raspi/'  + args.title + '/video.mp4'
-pid = subprocess.call(cmd, shell=True)
-pid = subprocess.call('rm /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264', shell=True)
+#cmd = 'MP4Box -add /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264 /mnt/media/Pictures/Raspi/'  + args.title + '/video.mp4'
+#pid = subprocess.call(cmd, shell=True)
+#pid = subprocess.call('rm /mnt/media/Pictures/Raspi/'  + args.title + '/video.h264', shell=True)
 
-time.sleep(5)
-pid = subprocess.call('raspistill -vf -hf -t 5 -o /mnt/media/Pictures/Raspi/'  + args.title + '/final.jpg', shell=True)
+index = 1
+while index < 100000:
+    index += 1
+	
+time.sleep(15)
+pid = subprocess.call('raspistill -vf -hf -t 1000 -o /mnt/media/Pictures/Raspi/'  + args.title + '/final.jpg', shell=True)
 
 ## Send completed email.
 SMTP_SERVER = 'smtp.gmail.com'
